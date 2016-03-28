@@ -115,7 +115,7 @@ public class GameActivity extends AppCompatActivity {
             if (mListItems.get(position).isChecked()) {
                 holder.mIvCover.setVisibility(View.VISIBLE);
                 holder.mIvCover.setBackgroundColor(Color.TRANSPARENT);
-                holder.mIvCover.setImageResource(R.drawable.ic_tick_mark);
+                holder.mIvCover.setImageResource(R.drawable.ic_cleared);
             } else {
                 holder.mIvCover.setBackgroundColor(Color.RED);
                 holder.mIvCover.setImageResource(0);
