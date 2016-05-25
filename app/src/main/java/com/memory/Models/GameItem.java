@@ -1,4 +1,4 @@
-package eu.com.cache.Models;
+package com.memory.Models;
 
 /**
  * Created by Kamal on 3/17/16.

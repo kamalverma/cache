@@ -1,4 +1,4 @@
-package eu.com.cache;
+package com.memory;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/material_blue_grey_950"
-    tools:context="eu.com.cache.GameActivity">
+    tools:context="com.memory.GameActivity">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

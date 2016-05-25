@@ -1,13 +1,9 @@
-package eu.com.cache;
+package com.memory;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -15,6 +11,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_splash);
+
 
         Handler handler= new Handler();
         handler.postDelayed(new Runnable() {
@@ -24,7 +21,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 10000);
+        }, 2000);
     }
 
 }

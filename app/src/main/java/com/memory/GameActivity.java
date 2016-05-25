@@ -1,16 +1,11 @@
-package eu.com.cache;
+package com.memory;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -21,10 +16,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
-import eu.com.cache.Models.GameItem;
+import com.memory.Models.GameItem;
 
 public class GameActivity extends AppCompatActivity {
 

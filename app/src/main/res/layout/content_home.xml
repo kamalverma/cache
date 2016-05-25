@@ -6,16 +6,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@color/material_blue_grey_950"
+    android:background="@android:color/holo_blue_dark"
     android:orientation="vertical"
   >
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Play"
+        android:text="New Game"
+        android:drawableLeft="@drawable/ic_splash_icon"
         android:textSize="30sp"
         android:textColor="@android:color/holo_red_light"
-        android:id="@+id/btn_play"
+        android:id="@+id/btn_play1"
         />
     <Button
         android:layout_width="match_parent"
@@ -23,7 +24,7 @@
         android:text="Play"
         android:textSize="30sp"
         android:textColor="@android:color/holo_red_light"
-        android:id="@+id/btn_play"
+        android:id="@+id/btn_play2"
         />
     <Button
         android:layout_width="match_parent"
@@ -31,7 +32,7 @@
         android:text="Play"
         android:textSize="30sp"
         android:textColor="@android:color/holo_red_light"
-        android:id="@+id/btn_play"
+        android:id="@+id/btn_play3"
         />
 
 </LinearLayout>

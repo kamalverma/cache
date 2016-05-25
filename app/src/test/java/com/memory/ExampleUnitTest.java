@@ -1,4 +1,4 @@
-package eu.com.cache;
+package com.memory;
 
 import org.junit.Test;
 
