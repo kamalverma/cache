@@ -16,7 +16,7 @@
         android:id="@+id/tv_item_text"
         android:singleLine="true"
         android:textSize="40sp"
-        android:text="S"
+        android:visibility="gone"
         android:textStyle="bold"
         android:gravity="center"/>
     <ImageView

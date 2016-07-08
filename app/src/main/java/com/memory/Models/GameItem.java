@@ -1,12 +1,14 @@
 package com.memory.Models;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Created by Kamal on 3/17/16.
  */
 public class GameItem {
 
     private String itemTag;
-    private String itemImageUrl;
+    private Drawable itemImageUrl;
     private String itemText;
     private boolean blankItem;
     private boolean openTemp;
@@ -37,11 +39,11 @@ public class GameItem {
         this.itemTag = itemTag;
     }
 
-    public String getItemImageUrl() {
+    public Drawable getItemImageUrl() {
         return itemImageUrl;
     }
 
-    public void setItemImageUrl(String itemImageUrl) {
+    public void setItemImageUrl(Drawable itemImageUrl) {
         this.itemImageUrl = itemImageUrl;
     }
 

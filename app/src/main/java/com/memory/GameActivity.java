@@ -2,6 +2,7 @@ package com.memory;
 
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -28,12 +29,35 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<GameItem> mListItems;
 
     private GameItem mLastSelectedItem = null;
-    String[] arr = {"A", "F", "H", "Z", "F", "K", "X", "P", "G", "P", "Z", "X", "G", "H", "T", "N", "N", "K", "A", "T"};
+    String[] arr = {"B", "E", "H", "C", "E", "K", "D", "P", "G", "P", "C", "D", "G", "H", "T", "M", "M", "K", "B", "T"};
+    Drawable[] arrDrawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        arrDrawable = new Drawable[]{getResources().getDrawable(R.drawable.bear),
+                getResources().getDrawable(R.drawable.elephant),
+                getResources().getDrawable(R.drawable.horse),
+                getResources().getDrawable(R.drawable.cobra),
+                getResources().getDrawable(R.drawable.elephant),
+                getResources().getDrawable(R.drawable.kangaroo),
+                getResources().getDrawable(R.drawable.dog),
+                getResources().getDrawable(R.drawable.panda),
+                getResources().getDrawable(R.drawable.gcat),
+                getResources().getDrawable(R.drawable.panda),
+                getResources().getDrawable(R.drawable.cobra),
+                getResources().getDrawable(R.drawable.dog),
+                getResources().getDrawable(R.drawable.gcat),
+                getResources().getDrawable(R.drawable.horse),
+                getResources().getDrawable(R.drawable.tiger),
+                getResources().getDrawable(R.drawable.monkey),
+                getResources().getDrawable(R.drawable.monkey),
+                getResources().getDrawable(R.drawable.kangaroo),
+                getResources().getDrawable(R.drawable.bear),
+                getResources().getDrawable(R.drawable.tiger)
+        };
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_items);
         mRecyclerView.setHasFixedSize(true);
@@ -78,7 +102,7 @@ public class GameActivity extends AppCompatActivity {
             GameItem gameItem = new GameItem();
             gameItem.setItemText(arr[i]);
             gameItem.setItemTag(arr[i]);
-            gameItem.setItemImageUrl(arr[i]);
+            gameItem.setItemImageUrl(arrDrawable[i]);
             if (arr[i].length() == 0)
                 gameItem.setBlankItem(true);
 
@@ -103,7 +127,8 @@ public class GameActivity extends AppCompatActivity {
         public void onBindViewHolder(GameHolder holder, int position) {
 
             holder.itemView.setTag(mListItems.get(position));
-            holder.mTvText.setText(mListItems.get(position).getItemText());
+            // holder.mTvText.setText(mListItems.get(position).getItemText());
+            holder.mImage.setImageDrawable(mListItems.get(position).getItemImageUrl());
 
             if (mListItems.get(position).isChecked()) {
                 holder.mIvCover.setVisibility(View.VISIBLE);
