@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Memory Booster</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_restart">Restart</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3649361103885562/6696223736</string>
 </resources>
