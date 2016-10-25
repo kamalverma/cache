@@ -1,24 +1,32 @@
 package com.memory;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.memory.Models.GameItem;
+
 import java.util.ArrayList;
 import java.util.Collections;
-
-import com.memory.Models.GameItem;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -31,12 +39,29 @@ public class GameActivity extends AppCompatActivity {
     private GameItem mLastSelectedItem = null;
     String[] arr = {"B", "E", "H", "C", "E", "K", "D", "P", "G", "P", "C", "D", "G", "H", "T", "M", "M", "K", "B", "T"};
     Drawable[] arrDrawable;
+    private int stepCounter = 0;
+    private TextView mTvStepCounter, mTvTimer;
+
+    private long totalTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3649361103885562~5297549332");
+
+        int toolbarId = getResources().getIdentifier("toolbar", "id", getPackageName());
+        Toolbar toolbar = (Toolbar) findViewById(toolbarId);
+
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+
+        totalTime = 3 * 60 * 1000;
         arrDrawable = new Drawable[]{getResources().getDrawable(R.drawable.bear),
                 getResources().getDrawable(R.drawable.elephant),
                 getResources().getDrawable(R.drawable.horse),
@@ -62,32 +87,73 @@ public class GameActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_items);
         mRecyclerView.setHasFixedSize(true);
 
+        mTvStepCounter = (TextView) findViewById(R.id.tv_counter);
+        mTvTimer = (TextView) findViewById(R.id.tv_timer);
+        mTvStepCounter.setText("Moves: " + stepCounter);
+
         setUpTestGame();
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 4);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(25));
+        mRecyclerView.addItemDecoration(new VerticalSpaceItemDecoration(20));
 
         mAdapter = new GameAdapter();
         mRecyclerView.setAdapter(mAdapter);
+
+
+        new CountDownTimer(totalTime, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                mTvTimer.setText("time left " + (int) ((millisUntilFinished / 1000) / 60) + ":" + (int) ((millisUntilFinished / 1000) % 60));
+            }
+
+            public void onFinish() {
+                mTvTimer.setText("Level Failed");
+                showRetryDialog();
+            }
+        }.start();
+
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("6F7F147B2873902EEAE835330554AFC8").build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_game, menu);
         return true;
     }
 
+
+    private void showRetryDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setNeutralButton("Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                restart();
+            }
+        });
+
+        builder.setCancelable(false);
+        builder.setMessage("Level Failed.");
+
+        builder.create().show();
+    }
+
+    private void restart() {
+        Intent intent = new Intent(GameActivity.this, GameActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_restart) {
+            restart();
             return true;
         }
 
@@ -119,8 +185,7 @@ public class GameActivity extends AppCompatActivity {
         public GameHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.row_game_item, parent, false);
-            GameHolder vh = new GameHolder(v);
-            return vh;
+            return new GameHolder(v);
         }
 
         @Override
@@ -135,7 +200,7 @@ public class GameActivity extends AppCompatActivity {
                 holder.mIvCover.setBackgroundColor(Color.TRANSPARENT);
                 holder.mIvCover.setImageResource(R.drawable.ic_cleared);
             } else {
-                holder.mIvCover.setBackgroundColor(Color.RED);
+                holder.mIvCover.setBackgroundColor(getColor(R.color.colorPrimary));
                 holder.mIvCover.setImageResource(0);
                 if (mListItems.get(position).isOpenTemp()) {
                     holder.mIvCover.setVisibility(View.GONE);
@@ -154,11 +219,11 @@ public class GameActivity extends AppCompatActivity {
 
     public class GameHolder extends RecyclerView.ViewHolder {
 
-        public TextView mTvText;
-        public ImageView mIvCover;
-        public ImageView mImage;
+        TextView mTvText;
+        ImageView mIvCover;
+        ImageView mImage;
 
-        public GameHolder(View itemView) {
+        GameHolder(View itemView) {
             super(itemView);
 
             mTvText = (TextView) itemView.findViewById(R.id.tv_item_text);
@@ -178,35 +243,62 @@ public class GameActivity extends AppCompatActivity {
                         item.setOpenTemp(true);
                         mLastSelectedItem = item;
                         mAdapter.notifyDataSetChanged();
-                        return;
-                    }
-
-                    if (item.getItemTag().equals(mLastSelectedItem.getItemTag())) {
+                    } else if (item.getItemTag().equals(mLastSelectedItem.getItemTag())) {
                         item.setChecked(true);
                         mLastSelectedItem.setChecked(true);
                         mAdapter.notifyDataSetChanged();
                         mLastSelectedItem = null;
-                        return;
                     } else {
                         //Close previously opened item
                         mLastSelectedItem.setOpenTemp(false);
                         mAdapter.notifyDataSetChanged();
-
                         //open current Item
                         item.setOpenTemp(true);
                         mLastSelectedItem = item;
                         mAdapter.notifyDataSetChanged();
                     }
 
+                    checkGameFinished();
                 }
             });
+        }
+    }
+
+    private void checkGameFinished() {
+        //Check if game is finished
+        boolean gameFinished = true;
+        for (GameItem gameItem : mListItems) {
+            if (!gameItem.isChecked()) {
+                gameFinished = false;
+                break;
+            }
+        }
+        if (gameFinished) {
+
+            if (stepCounter <= 35) {
+                //Three star
+                mTvStepCounter.setText("Awesome.. " + stepCounter + " ");
+            } else if (stepCounter <= 50) {
+                //Two Star
+                mTvStepCounter.setText("Good.. " + stepCounter + " ");
+            } else if (stepCounter <= 55) {
+                mTvStepCounter.setText("cleared.. " + stepCounter + " ");
+                //One star
+            } else {
+                mTvStepCounter.setText("Bad Score.. " + stepCounter + " ");
+                //Level Failed try Again
+            }
+
+        } else {
+            stepCounter += 1;
+            mTvStepCounter.setText("Moves: " + stepCounter + "");
         }
     }
 
     public class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
         private final int mVerticalSpaceHeight;
 
-        public VerticalSpaceItemDecoration(int mVerticalSpaceHeight) {
+        VerticalSpaceItemDecoration(int mVerticalSpaceHeight) {
             this.mVerticalSpaceHeight = mVerticalSpaceHeight;
         }
 
