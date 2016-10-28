@@ -1,9 +1,13 @@
-package com.memory;
+package com.cache;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -12,12 +16,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_splash);
 
-
+        Fabric.with(this, new Crashlytics());
         Handler handler= new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent= new Intent(SplashActivity.this, GameActivity.class);
+                Intent intent= new Intent(SplashActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
             }

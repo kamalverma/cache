@@ -1,4 +1,4 @@
-package com.memory;
+package com.cache;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,13 +23,14 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.memory.Models.GameItem;
+import com.cache.Models.GameItem;
+import com.cache.common.AppKeys;
+import com.cache.common.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class GameActivity extends AppCompatActivity {
-
 
     private RecyclerView mRecyclerView;
 
@@ -42,7 +43,7 @@ public class GameActivity extends AppCompatActivity {
     private int stepCounter = 0;
     private TextView mTvStepCounter, mTvTimer;
 
-    private long totalTime;
+    private long totalTime = 3 * 60 * 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +60,7 @@ public class GameActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-
-        totalTime = 3 * 60 * 1000;
+        totalTime = getIntent().getExtras().getLong(AppKeys.KEY_DURATION);
         arrDrawable = new Drawable[]{getResources().getDrawable(R.drawable.bear),
                 getResources().getDrawable(R.drawable.elephant),
                 getResources().getDrawable(R.drawable.horse),
@@ -91,7 +90,7 @@ public class GameActivity extends AppCompatActivity {
         mTvTimer = (TextView) findViewById(R.id.tv_timer);
         mTvStepCounter.setText("Moves: " + stepCounter);
 
-        setUpTestGame();
+        setUpGame();
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 4);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -109,13 +108,12 @@ public class GameActivity extends AppCompatActivity {
 
             public void onFinish() {
                 mTvTimer.setText("Level Failed");
-                showRetryDialog();
+                showRetryDialog("Level Failed. You can do better!", "Retry");
             }
         }.start();
 
-
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("6F7F147B2873902EEAE835330554AFC8").build();
+        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
 
@@ -126,10 +124,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
 
-    private void showRetryDialog() {
+    private void showRetryDialog(String message, String cta) {
 
+        if (isFinishing()) {
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setNeutralButton("Retry", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(cta, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -138,13 +139,14 @@ public class GameActivity extends AppCompatActivity {
         });
 
         builder.setCancelable(false);
-        builder.setMessage("Level Failed.");
+        builder.setMessage(message);
 
         builder.create().show();
     }
 
     private void restart() {
         Intent intent = new Intent(GameActivity.this, GameActivity.class);
+        intent.putExtra(AppKeys.KEY_DURATION, getIntent().getExtras().getLong(AppKeys.KEY_DURATION));
         startActivity(intent);
         finish();
     }
@@ -155,13 +157,15 @@ public class GameActivity extends AppCompatActivity {
         if (id == R.id.action_restart) {
             restart();
             return true;
+        } else if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void setUpTestGame() {
+    private void setUpGame() {
         mListItems = new ArrayList<>();
 
         for (int i = 0; i < 20; i++) {
@@ -200,7 +204,8 @@ public class GameActivity extends AppCompatActivity {
                 holder.mIvCover.setBackgroundColor(Color.TRANSPARENT);
                 holder.mIvCover.setImageResource(R.drawable.ic_cleared);
             } else {
-                holder.mIvCover.setBackgroundColor(getColor(R.color.colorPrimary));
+
+                holder.mIvCover.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 holder.mIvCover.setImageResource(0);
                 if (mListItems.get(position).isOpenTemp()) {
                     holder.mIvCover.setVisibility(View.GONE);
@@ -288,6 +293,12 @@ public class GameActivity extends AppCompatActivity {
                 mTvStepCounter.setText("Bad Score.. " + stepCounter + " ");
                 //Level Failed try Again
             }
+
+            int previousBest = PrefUtils.getBestScore(this);
+            if (previousBest == 0 || previousBest > stepCounter) {
+                PrefUtils.saveBestScore(this, stepCounter);
+            }
+            showRetryDialog(mTvStepCounter.getText().toString(), "Replay");
 
         } else {
             stepCounter += 1;
