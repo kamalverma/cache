@@ -10,16 +10,23 @@ import android.widget.TextView;
 
 import com.cache.common.AppKeys;
 import com.cache.common.PrefUtils;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 public class HomeActivity extends AppCompatActivity {
 
     private TextView mTvBestScore;
+
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_home);
 
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getResources().getString(R.string.intersterial_ad_unit_id));
 
         int toolbarId = getResources().getIdentifier("toolbar", "id", getPackageName());
         Toolbar toolbar = (Toolbar) findViewById(toolbarId);
@@ -50,6 +57,18 @@ public class HomeActivity extends AppCompatActivity {
                 startGame(1 * 60 * 1000);
             }
         });
+
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                requestNewInterstitial();
+            }
+
+
+        });
+        requestNewInterstitial();
     }
 
     private void startGame(long millis) {
@@ -72,6 +91,23 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setUpbestScore();
+
+        showinterstitialAd();
+    }
+
+
+    private void showinterstitialAd() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
+    }
+
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
     }
 
     @Override
