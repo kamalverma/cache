@@ -1,5 +1,6 @@
 package com.cache;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +28,8 @@ import com.google.android.gms.ads.MobileAds;
 import com.cache.Models.GameItem;
 import com.cache.common.AppKeys;
 import com.cache.common.PrefUtils;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +42,7 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<GameItem> mListItems;
 
     private GameItem mLastSelectedItem = null;
-    String[] arr = {"B", "E", "H", "C", "E", "K", "D", "P", "G", "P", "C", "D", "G", "H", "T", "M", "M", "K", "B", "T"};
+    String[] arr = {"E", "H", "", "E", "K", "D", "G", "", "D", "G", "H", "T", "", "", "K", "T"};
     Drawable[] arrDrawable;
     private int stepCounter = 0;
     private TextView mTvStepCounter, mTvTimer;
@@ -61,7 +65,7 @@ public class GameActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         totalTime = getIntent().getExtras().getLong(AppKeys.KEY_DURATION);
-        arrDrawable = new Drawable[]{getResources().getDrawable(R.drawable.bear),
+        arrDrawable = new Drawable[]{
                 getResources().getDrawable(R.drawable.elephant),
                 getResources().getDrawable(R.drawable.horse),
                 getResources().getDrawable(R.drawable.cobra),
@@ -79,7 +83,6 @@ public class GameActivity extends AppCompatActivity {
                 getResources().getDrawable(R.drawable.monkey),
                 getResources().getDrawable(R.drawable.monkey),
                 getResources().getDrawable(R.drawable.kangaroo),
-                getResources().getDrawable(R.drawable.bear),
                 getResources().getDrawable(R.drawable.tiger)
         };
 
@@ -151,11 +154,30 @@ public class GameActivity extends AppCompatActivity {
         finish();
     }
 
+    private void showDialog(String title, String CTA) {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialoglayout);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        Button btnDismiss = (Button) dialog.findViewById(R.id.dismiss);
+        TextView message = (TextView) dialog.findViewById(R.id.tv_message);
+        message.setText(title);
+
+        btnDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_restart) {
-            restart();
+
+            showDialog("Level Failed. You can do better!", "Retry");
+           // restart();
             return true;
         } else if (id == android.R.id.home) {
             onBackPressed();
@@ -168,7 +190,7 @@ public class GameActivity extends AppCompatActivity {
     private void setUpGame() {
         mListItems = new ArrayList<>();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < arr.length; i++) {
             GameItem gameItem = new GameItem();
             gameItem.setItemText(arr[i]);
             gameItem.setItemTag(arr[i]);
@@ -197,6 +219,11 @@ public class GameActivity extends AppCompatActivity {
 
             holder.itemView.setTag(mListItems.get(position));
             // holder.mTvText.setText(mListItems.get(position).getItemText());
+
+            if (mListItems.get(position).isBlankItem()) {
+                holder.itemView.setVisibility(View.INVISIBLE);
+                return;
+            }
             holder.mImage.setImageDrawable(mListItems.get(position).getItemImageUrl());
 
             if (mListItems.get(position).isChecked()) {
@@ -205,7 +232,7 @@ public class GameActivity extends AppCompatActivity {
                 holder.mIvCover.setImageResource(R.drawable.ic_cleared);
             } else {
 
-                holder.mIvCover.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                holder.mIvCover.setBackgroundResource(R.drawable.base);
                 holder.mIvCover.setImageResource(0);
                 if (mListItems.get(position).isOpenTemp()) {
                     holder.mIvCover.setVisibility(View.GONE);
