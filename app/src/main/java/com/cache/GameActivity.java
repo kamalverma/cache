@@ -22,14 +22,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.cache.Models.GameItem;
 import com.cache.common.AppKeys;
 import com.cache.common.PrefUtils;
-
-import org.w3c.dom.Text;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -116,7 +114,7 @@ public class GameActivity extends AppCompatActivity {
         }.start();
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("6F7F147B2873902EEAE835330554AFC8").build();
         mAdView.loadAd(adRequest);
     }
 
@@ -155,12 +153,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showDialog(String title, String CTA) {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialoglayout);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(R.layout.dialoglayout);
+        builder.setCancelable(true);
+
+        final AlertDialog dialog = builder.create();
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         Button btnDismiss = (Button) dialog.findViewById(R.id.dismiss);
         TextView message = (TextView) dialog.findViewById(R.id.tv_message);
         message.setText(title);
+
 
         btnDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,7 +179,7 @@ public class GameActivity extends AppCompatActivity {
         if (id == R.id.action_restart) {
 
             showDialog("Level Failed. You can do better!", "Retry");
-           // restart();
+            // restart();
             return true;
         } else if (id == android.R.id.home) {
             onBackPressed();
@@ -195,8 +197,10 @@ public class GameActivity extends AppCompatActivity {
             gameItem.setItemText(arr[i]);
             gameItem.setItemTag(arr[i]);
             gameItem.setItemImageUrl(arrDrawable[i]);
-            if (arr[i].length() == 0)
+            if (arr[i].length() == 0) {
                 gameItem.setBlankItem(true);
+                gameItem.setChecked(true);
+            }
 
             mListItems.add(gameItem);
         }

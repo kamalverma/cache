@@ -104,7 +104,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void requestNewInterstitial() {
-        AdRequest adRequest = new AdRequest.Builder()
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("6F7F147B2873902EEAE835330554AFC8")
                 .build();
 
         mInterstitialAd.loadAd(adRequest);
